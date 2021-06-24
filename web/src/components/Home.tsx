@@ -73,10 +73,10 @@ export default function ContactTable() {
                             <TableCell align="right">{contact.phone}</TableCell>
                             <TableCell align="right">
                                 <Link to={`editar/${contact.id}`}>
-                                    <Button><EditIcon className={classes.marginRight} /></Button>
+                                    <Button><EditIcon /></Button>
                                 </Link>
                                 <Link to={`detalhes/${contact.id}`}>
-                                    <Button><PageviewIcon className={classes.marginRight} /></Button>
+                                    <Button><PageviewIcon /></Button>
                                 </Link>
                                 <Button><DeleteIcon onClick={e => deleteContact(e, contact.id)} /></Button>
 
