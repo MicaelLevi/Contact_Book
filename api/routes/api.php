@@ -22,6 +22,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::get('/contacts', [ContactController::class, 'index']);
 
+Route::get('/contacts/{contact}', [ContactController::class, 'show']);
+
 Route::post('/contacts', [ContactController::class, 'store']);
 
 Route::put('/contacts/{contact}', [ContactController::class, 'update']);

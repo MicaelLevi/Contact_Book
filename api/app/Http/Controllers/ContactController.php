@@ -10,6 +10,10 @@ class ContactController extends Controller
         return Contact::all();
     }
 
+    public function show($id) {
+        return Contact::find($id);
+    }
+
     public function store(Request $request) {
         try {
             $contact = Contact::create($request->all());
