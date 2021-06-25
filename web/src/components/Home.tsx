@@ -12,16 +12,29 @@ import Paper from '@material-ui/core/Paper';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import PageviewIcon from '@material-ui/icons/Pageview';
+import { Container, Typography } from '@material-ui/core';
 import { Button } from '@material-ui/core';
+import { CircularProgress } from '@material-ui/core';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
     table: {
         minWidth: 650,
     },
     marginRight: {
         marginRight: 10
-    }
-});
+    },
+    ciruclarProgress: {
+        position: 'absolute',
+        left: '50%',
+        top: '50%',
+    },
+    paper: {
+        marginTop: theme.spacing(8),
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+}))
 
 export interface IValues {
     id: number,
@@ -34,6 +47,8 @@ export interface IValues {
 export default function ContactTable() {
     const classes = useStyles();
     const [data, setData] = useState([] as IValues[]);
+    const [loading, setLoading] = useState(true);
+    const [empty, setEmpty] = useState(false);
 
     useEffect(() => {
         getData();
@@ -42,49 +57,67 @@ export default function ContactTable() {
     const getData = async () => {
         const contacts = await axios.get('http://127.0.0.1:8000/api/contacts');
         setData(contacts.data);
-        console.log(contacts);
+        setLoading(false);
+        if (JSON.stringify(contacts.data) === '[]') {
+            setEmpty(true);
+        }
+        console.log(contacts.data);
     }
 
     const deleteContact = async (event: any, id: number) => {
         event.persist();
-        console.log(id);
         await axios.delete('http://127.0.0.1:8000/api/contacts/' + id).then(data_ => {
-            console.log('http://127.0.0.1:8000/api/contacts/${id}');
             getData();
         })
     }
 
     return (
-        <TableContainer component={Paper}>
-            <Table className={classes.table} aria-label="simple table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Name</TableCell>
-                        <TableCell align="right">Contact Number</TableCell>
-                        <TableCell align="right"></TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {data.map(contact => (
-                        <TableRow key={contact.id}>
-                            <TableCell component="th" scope="row">
-                                {contact.name}
-                            </TableCell>
-                            <TableCell align="right">{contact.phone}</TableCell>
-                            <TableCell align="right">
-                                <Link to={`editar/${contact.id}`}>
-                                    <Button><EditIcon /></Button>
-                                </Link>
-                                <Link to={`detalhes/${contact.id}`}>
-                                    <Button><PageviewIcon /></Button>
-                                </Link>
-                                <Button><DeleteIcon onClick={e => deleteContact(e, contact.id)} /></Button>
+        <>
+            {loading && <CircularProgress className={classes.ciruclarProgress} />}
+            {!loading && empty && (
+                <Container component="main" maxWidth="xs">
+                    <div className={classes.paper}>
+                        <Typography component="h1" variant="h5" >
+                            Sem Contatos Adicionados
+                        </Typography>
+                    </div>
+                </Container>
+            )}
+            {!loading && !empty && (
+                <TableContainer component={Paper}>
+                    <Table className={classes.table} aria-label="simple table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Nome</TableCell>
+                                <TableCell align="right">Telefone</TableCell>
+                                <TableCell align="right">Ações</TableCell>
 
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {data.map(contact => (
+                                <TableRow key={contact.id}>
+                                    <TableCell component="th" scope="row">
+                                        {contact.name}
+                                    </TableCell>
+                                    <TableCell align="right">{contact.phone}</TableCell>
+                                    <TableCell align="right">
+                                        <Link to={`editar/${contact.id}`}>
+                                            <Button><EditIcon /></Button>
+                                        </Link>
+                                        <Link to={`detalhes/${contact.id}`}>
+                                            <Button><PageviewIcon /></Button>
+                                        </Link>
+                                        <Button><DeleteIcon onClick={e => deleteContact(e, contact.id)} /></Button>
+
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            )}
+
+        </>
     )
 }

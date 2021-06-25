@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import { RouteComponentProps, withRouter, useHistory, Link } from 'react-router-dom';
+import { withRouter, useHistory, Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core';
 import { Container, Typography, TextField, Button } from '@material-ui/core';
+import { IValues } from '../../types/ContactsTypes';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -18,21 +19,10 @@ const useStyles = makeStyles((theme) => ({
     submit: {
         margin: theme.spacing(3, 0, 2),
     },
+    link: {
+        textDecoration: 'none',
+    }
 }))
-
-export interface IValues {
-    name: string,
-    phone: string,
-    email: string,
-    description: string,
-}
-
-export interface IFormState {
-    [key: string]: any;
-    values: IValues[];
-    submitSuccess: boolean;
-    loading: boolean;
-}
 
 export const defaultValues: IValues = {
     name: "",
@@ -41,7 +31,7 @@ export const defaultValues: IValues = {
     description: ""
 }
 
-function CreateContact<RouteComponentProps>() {
+function CreateContact() {
     const [values, setValues] = useState(defaultValues as IValues);
 
     const classes = useStyles();
@@ -62,13 +52,19 @@ function CreateContact<RouteComponentProps>() {
         ]);
     }
 
+    function refreshPage() {
+        setTimeout(() => {
+            window.location.reload();
+        }, 500);
+    }
+
     return (
         <Container component="main" maxWidth="xs">
             <div className={classes.paper}>
                 <Typography component="h1" variant="h5">
                     Adicionar Contato
                 </Typography>
-                <form className={classes.form} noValidate>
+                <form className={classes.form}>
                     <TextField
                         variant="outlined"
                         margin="normal"
@@ -116,7 +112,7 @@ function CreateContact<RouteComponentProps>() {
                         defaultValue={values.description}
                         onChange={handleChange}
                     />
-                    <Link to={`/`}>
+                    <Link to={`/`} onClick={refreshPage} className={classes.link}>
                         <Button
                             type="submit"
                             fullWidth
